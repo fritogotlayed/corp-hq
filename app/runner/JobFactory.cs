@@ -43,6 +43,9 @@ namespace Runner
                 case JobTypes.ImportMarketData:
                     job = (Job)Bootstrap.ServiceProvider.GetService(typeof(ImportMarketData));
                     break;
+                case JobTypes.ImportEveUniverseTypes:
+                    job = new ImportEveUniverseTypes(jobSpec.Uuid, dbFactory ?? DbFactory);
+                    break;
                 default:
                     job = null;
                     break;

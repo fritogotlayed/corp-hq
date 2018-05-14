@@ -41,13 +41,13 @@ namespace Runner.Jobs
         /// </summary>
         protected override void Work()
         {
+            this.AddMessage("Fetching list of regions.");
             this.ImportRegions();
+            this.AddMessage("Finished importing region data.");
         }
 
         private void ImportRegions()
         {
-            this.AddMessage("Fetching list of regions.");
-
             Client.DefaultRequestHeaders.Accept.Clear();
             Client.DefaultRequestHeaders.Add("Accept", "application/json");
 
@@ -72,8 +72,6 @@ namespace Runner.Jobs
 
                 this.MapRepository.SaveRegion(regionData);
             }
-
-            this.AddMessage("Finished importing region data.");
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Justification="Used by Newtonsoft.Json")]
