@@ -6,7 +6,10 @@ build-api:  ## Builds the API displaying any analytics violations.
 build-api-tests:  ## Builds the API tests.
 	dotnet build --no-incremental ./tests/unit/apitest
 
-build-runner:  ## Builds the API displaying any analytics violations.
+build-manager:  ## Builds the job manager displaying any analytics violations.
+	dotnet build --no-incremental ./app/manager
+
+build-runner:  ## Builds the job runner displaying any analytics violations.
 	dotnet build --no-incremental ./app/runner
 
 build-runner-tests:  ## Builds the API tests.
@@ -35,31 +38,18 @@ docker-build-ui:  ## Runs the docker build for the corp-hq ui project
 help:  ## Prints this help message.
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
+mongo-connect:  ## Starts an interactive mongo command line shell connected to the quickstart mongo container 
+	docker exec -it mongodb mongo
+
 publish-api:  ## Publishes the API displaying any analytics violations.
 	dotnet publish --configuration Release ./app/api
 
 publish-runner:  ## Publishes the runner displaying any analytics violations.
 	dotnet publish --configuration Release ./app/runner
 
+quickstart:  ## Cleans up resources started by the quickstart process.
+	./quick-start.sh
+
 quickstart-cleanup:  ## Cleans up resources started by the quickstart process.
 	docker-compose -f quickstart-compose.yml down -v
 
-run-api: build-api  ## Builds the API then runs it.
-	MONGO_CONNECTION=mongodb://mongoUser:mongoPass@127.0.0.1:27017/auth dotnet run -p ./app/api
-
-run-api-tests: build-api-tests  ## Builds the API tests then runs them
-	# This is super hacky but dotnet 2.0 doesn't support xunit as a global command.
-	cd ./tests/unit/apitest; dotnet xunit; cd ../../..;
-
-run-runner: build-runner  ## Builds the API then runs it.
-	MONGO_CONNECTION=mongodb://mongoUser:mongoPass@127.0.0.1:27017/auth dotnet run -p ./app/runner
-
-run-runner-tests: build-runner-tests  ## Builds the API tests then runs them
-	# This is super hacky but dotnet 2.0 doesn't support xunit as a global command.
-	cd ./tests/unit/runnertest; dotnet xunit; cd ../../..;
-
-run-ui:  ## Builds the UI then runs it.
-	npm run --prefix ./app/ui dev
-
-seed-data:  ## Executes the seed data against the local mongo database.
-	mongo 127.0.0.1/corp-hq ./mongo-scripts/local-seed-data.js

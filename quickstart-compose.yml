@@ -72,8 +72,8 @@ services:
         volumes:
             - ./mongo-data/db:/data/db
             - ./mongo-scripts:/var/scripts
-        ports:
-            - 27017:27017
+        # ports:
+        #     - 27017:27017
         command: mongod --smallfiles --logpath=/dev/null  # -auth  # --quiet
     eve-api:
         container_name: "eve-api"

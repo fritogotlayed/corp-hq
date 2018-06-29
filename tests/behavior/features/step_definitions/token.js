@@ -23,30 +23,36 @@ Given('I already have an auth token expiring in {int} seconds', function (expire
     this.token = generateToken()
     this.tokenExpiry = getExpiryTime(expireSeconds * 1000)
     let test = this
-    return new Promise((resolve, reject) => {
-        MongoClient.connect(test.mongoUrl, function(err, db) {
-            try {
-                if (err) reject(err)
-                let dbo = db.db(test.appDb)
-                let dbc = dbo.collection('sessions')
-                let item = {
-                    'expireAt': test.tokenExpiry,
-                    'key': test.token,
-                    'username': 'testUser',
-                    'endpoint': '127.0.0.1'
+    return new Promise((resolve) => {
+        // Sleep a bit here to allow the eventual consistency to catch up.
+        test.sleep(1000)
+        resolve()
+    }).then(() => {
+        return new Promise((resolve, reject) => {
+            MongoClient.connect(test.mongoUrl, function(err, db) {
+                try {
+                    if (err) reject(err)
+                    let dbo = db.db(test.appDb)
+                    let dbc = dbo.collection('sessions')
+                    let item = {
+                        'expireAt': test.tokenExpiry,
+                        'key': test.token,
+                        'username': 'testUser',
+                        'endpoint': '127.0.0.1'
+                    }
+
+                    // clear the collection
+                    dbc.insertOne(item)
+
+                    resolve()
                 }
-
-                // clear the collection
-                dbc.insertOne(item)
-
-                resolve()
-            }
-            catch(err){
-                reject(err)
-            }
-            finally{
-                db.close()
-            }
+                catch(err){
+                    reject(err)
+                }
+                finally{
+                    db.close()
+                }
+            })
         })
     })
 })

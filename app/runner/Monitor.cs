@@ -200,7 +200,6 @@ namespace Runner
                 var uuid = new Guid(e.Body).ToString();
                 Console.WriteLine(" [x] Received  {0}", uuid);
 
-                /* TODO: Actual job processing logic here. */
                 var col = dbFactory.GetCollection<JobSpecLite>(CollectionNames.Jobs);
 
                 var jobSpec = col.AsQueryable().Where(j => j.Uuid == uuid)
